@@ -15,10 +15,12 @@ import { LLM } from "../../llms/base";
 import { logger } from "../../utils/logger";
 import { z } from "zod";
 
+const stripMarkdownFences = (text: string): string =>
+  text.replace(/^```(?:json)?\s*\n?/i, "").replace(/\n?```\s*$/i, "");
+
 const parseJsonResponse = (response: any): string => {
-  if (typeof response === "string") return response;
-  if (response?.content) return response.content;
-  return "";
+  const raw = typeof response === "string" ? response : (response?.content ?? "");
+  return stripMarkdownFences(raw.trim());
 };
 
 const normalizeEntities = (
